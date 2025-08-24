@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auth System with Transitions</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            perspective: 1000px;
+        }
+
+        .auth-box {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+            transition: transform 0.5s ease;
+        }
+
+        .form-container {
+            position: relative;
+            width: 100%;
+            min-height: 450px;
+        }
+
+        .form {
+            position: absolute;
+            width: 100%;
+            padding: 10px;
+            transition: all 0.5s ease;
+            backface-visibility: hidden;
+        }
+
+        .login-form {
+            transform: rotateY(0deg);
+        }
+
+        .signup-form {
+            transform: rotateY(180deg);
+        }
+
+        .welcome-screen {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            padding: 40px 20px;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.5s ease;
+            z-index: 10;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            color: #777;
+            margin-bottom: 25px;
+            font-size: 15px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 15px;
+            top: 14px;
+            color: #777;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: #6e8efb;
+            outline: none;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(to right, #6e8efb, #a777e3);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(110, 142, 251, 0.4);
+        }
+
+        .switch-form {
+            text-align: center;
+            margin-top: 25px;
+            color: #777;
+        }
+
+        .switch-btn {
+            color: #6e8efb;
+            cursor: pointer;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .switch-btn:hover {
+            color: #a777e3;
+            text-decoration: underline;
+        }
+
+        .welcome-icon {
+            font-size: 60px;
+            color: #6e8efb;
+            margin-bottom: 20px;
+        }
+
+        .welcome-title {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .welcome-message {
+            color: #777;
+            margin-bottom: 30px;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .logout-btn {
+            padding: 12px 30px;
+            background: #f1f5fe;
+            border: none;
+            border-radius: 8px;
+            color: #6e8efb;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #e4ebfb;
+            transform: translateY(-2px);
+        }
+
+        /* Active states */
+        .show-signup .login-form {
+            transform: rotateY(-180deg);
+        }
+
+        .show-signup .signup-form {
+            transform: rotateY(0deg);
+        }
+
+        .show-welcome .login-form,
+        .show-welcome .signup-form {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+
+        .show-welcome .welcome-screen {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Decorations */
+        .decoration {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, rgba(110, 142, 251, 0.1), rgba(167, 119, 227, 0.1));
+            z-index: -1;
+        }
+
+        .decoration-1 {
+            top: -80px;
+            right: -80px;
+        }
+
+        .decoration-2 {
+            bottom: -80px;
+            left: -80px;
+            width: 250px;
+            height: 250px;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .auth-box {
+                padding: 20px;
+            }
+            
+            .form-container {
+                min-height: 400px;
+            }
+            
+            .welcome-screen {
+                padding: 30px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="auth-box" id="auth-box">
+            <div class="decoration decoration-1"></div>
+            <div class="decoration decoration-2"></div>
+            
+            <div class="form-container">
+                <!-- Login Form -->
+                <form class="form login-form">
+                    <h2>Welcome Back</h2>
+                    <p class="subtitle">Sign in to continue your journey</p>
+                    
+                    <div class="input-group">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="login-email" placeholder="Email address" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="login-password" placeholder="Password" required>
+                    </div>
+                    
+                    <button type="button" class="btn" id="login-btn">Sign In</button>
+                    
+                    <div class="switch-form">
+                        Don't have an account? <span class="switch-btn" id="to-signup">Sign Up</span>
+                    </div>
+                </form>
+                
+                <!-- Signup Form -->
+                <form class="form signup-form">
+                    <h2>Create Account</h2>
+                    <p class="subtitle">Join us and start your adventure</p>
+                    
+                    <div class="input-group">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="signup-name" placeholder="Full name" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="signup-email" placeholder="Email address" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="signup-password" placeholder="Password" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="signup-confirm" placeholder="Confirm password" required>
+                    </div>
+                    
+                    <button type="button" class="btn" id="signup-btn">Create Account</button>
+                    
+                    <div class="switch-form">
+                        Already have an account? <span class="switch-btn" id="to-login">Sign In</span>
+                    </div>
+                </form>
+                
+                <!-- Welcome Screen -->
+                <div class="welcome-screen">
+                    <i class="fas fa-check-circle welcome-icon"></i>
+                    <h2 class="welcome-title" id="welcome-title">Welcome Back!</h2>
+                    <p class="welcome-message" id="welcome-message">You have successfully signed in to your account.</p>
+                    <button class="logout-btn" id="logout-btn">Log Out</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const authBox = document.getElementById('auth-box');
+            const toSignupBtn = document.getElementById('to-signup');
+            const toLoginBtn = document.getElementById('to-login');
+            const loginBtn = document.getElementById('login-btn');
+            const signupBtn = document.getElementById('signup-btn');
+            const logoutBtn = document.getElementById('logout-btn');
+            const welcomeTitle = document.getElementById('welcome-title');
+            const welcomeMessage = document.getElementById('welcome-message');
+            
+            // Switch to Signup form
+            toSignupBtn.addEventListener('click', function() {
+                authBox.classList.add('show-signup');
+                authBox.classList.remove('show-welcome');
+            });
+            
+            // Switch to Login form
+            toLoginBtn.addEventListener('click', function() {
+                authBox.classList.remove('show-signup');
+                authBox.classList.remove('show-welcome');
+            });
+            
+            // Login action
+            loginBtn.addEventListener('click', function() {
+                const email = document.getElementById('login-email').value;
+                if (!email) {
+                    alert('Please enter your email');
+                    return;
+                }
+                
+                // For demo purposes, we'll just show welcome message
+                welcomeTitle.textContent = 'Welcome Back!';
+                welcomeMessage.textContent = `You have successfully signed in with ${email}. We're glad to see you again!`;
+                
+                authBox.classList.add('show-welcome');
+            });
+            
+            // Signup action
+            signupBtn.addEventListener('click', function() {
+                const name = document.getElementById('signup-name').value;
+                const email = document.getElementById('signup-email').value;
+                
+                if (!name || !email) {
+                    alert('Please fill in all required fields');
+                    return;
+                }
+                
+                // For demo purposes, we'll just show welcome message
+                welcomeTitle.textContent = `Hello, ${name}!`;
+                welcomeMessage.textContent = `Your account with ${email} has been successfully created. Welcome to our community!`;
+                
+                authBox.classList.add('show-welcome');
+            });
+            
+            // Logout action
+            logoutBtn.addEventListener('click', function() {
+                // Clear form fields
+                document.getElementById('login-email').value = '';
+                document.getElementById('login-password').value = '';
+                document.getElementById('signup-name').value = '';
+                document.getElementById('signup-email').value = '';
+                document.getElementById('signup-password').value = '';
+                document.getElementById('signup-confirm').value = '';
+                
+                // Return to login form
+                authBox.classList.remove('show-signup');
+                authBox.classList.remove('show-welcome');
+            });
+        });
+    </script>
+</body>
+</html>
